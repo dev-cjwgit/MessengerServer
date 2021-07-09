@@ -10,13 +10,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 
 
 public class Server implements Runnable {
     @Override
     public void run() {
-
         final ServerHandler serverHandler = new ServerHandler();
         EventLoopGroup group = new NioEventLoopGroup(); // EventLoopGroup 생성
         try {
@@ -41,7 +39,5 @@ public class Server implements Runnable {
                 e.printStackTrace();
             }
         }
-
     }
-
 }
