@@ -1,11 +1,15 @@
 package Packet;
 
+/**********************
+* Little Endian Bytes *
+**********************/
+
 import java.nio.charset.StandardCharsets;
 
 public class ReadPacket {
     private ByteArrayByteStream bs;
 
-    public ReadPacket(ByteArrayByteStream bs){
+    public ReadPacket(ByteArrayByteStream bs) {
         this.bs = bs;
     }
 

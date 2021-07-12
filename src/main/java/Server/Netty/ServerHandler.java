@@ -31,7 +31,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
         cause.printStackTrace();
         ctx.close();
     }
-
+    /* 모든 채널에서 패킷 읽기를 완료했을 때 */
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
@@ -41,13 +41,12 @@ public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        System.out.println("누군가 종료함");
+        System.out.println(ctx.channel().remoteAddress().toString() + "님이 종료하셨습니다.");
     }
     // 종료 이벤트
 //    @Override
 //    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 //        super.channelUnregistered(ctx);
-//        System.out.println("누군가 종료함");
 //    }
 
 }
