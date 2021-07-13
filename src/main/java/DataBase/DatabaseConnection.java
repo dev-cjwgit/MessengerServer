@@ -7,7 +7,6 @@ import ServerConstants.ServerConstant;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
@@ -15,10 +14,10 @@ import java.util.Set;
 import java.util.Stack;
 
 public class DatabaseConnection {
-    private String databaseUrl;
-    private String userName;
-    private String password;
-    private int maxPoolSize;
+    private final String databaseUrl;
+    private final String userName;
+    private final String password;
+    private final int maxPoolSize;
     private int connNum = 0;
 
     private static final String SQL_VERIFYCONN = "select 1";
@@ -26,7 +25,7 @@ public class DatabaseConnection {
     Stack<Connection> freePool = new Stack<>();
     Set<Connection> occupiedPool = new HashSet<>();
 
-    /**
+    /*
      * Constructor
      *
      * @param databaseUrl
@@ -39,7 +38,8 @@ public class DatabaseConnection {
      *            max size of the connection pool
      */
     public DatabaseConnection() {
-        this.databaseUrl = ServerConstant.DATABASE_IP;
+        // jdbc:mysql://mysqlaasdevintic-sha.cloudapp.net:3306/<Your DB name>
+        this.databaseUrl = "jdbc:mysql://mysqlaasdevintic-sha.cloudapp.net:3306/" + ServerConstant.DATABASE_NAME;
         this.userName = ServerConstant.USER_NAME;
         this.password = ServerConstant.USER_PASSWORD;
         this.maxPoolSize = ServerConstant.maxSize;
@@ -186,3 +186,28 @@ public class DatabaseConnection {
         }
     }
 }
+
+/*
+// Just an Example
+    public static void main(String[] args) throws SQLException {
+        Connection conn = null;
+        MySQLConnectionPool pool = new MySQLConnectionPool();
+        try {
+            conn = pool.getConnection();
+            try (Statement statement = conn.createStatement())
+            {
+                ResultSet res = statement.executeQuery("show tables");
+                System.out.println("There are below tables:");
+                while (res.next()) {
+                    String tblName = res.getString(1);
+                    System.out.println(tblName);
+                }
+            }
+        }
+         finally {
+            if (conn != null) {
+                pool.returnConnection(conn);
+            }
+        }
+    }
+ */
