@@ -1,5 +1,7 @@
+import DataBase.DAO;
 import Server.Netty.Server;
 
+import java.sql.SQLException;
 import java.util.concurrent.*;
 
 
@@ -9,8 +11,11 @@ public class Main {
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(100,100,10, TimeUnit.SECONDS, blockingQueue);
 
         threadPoolExecutor.execute(new Server());
-
-        System.out.println("안녕하세요");
+        try {
+            DAO.GetAcount();
+        }catch (SQLException sqlex){
+            sqlex.printStackTrace();
+        }
 
     }
 }

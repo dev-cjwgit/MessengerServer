@@ -3,6 +3,7 @@ package DataBase;
 /***************************************************************************************
  * https://docs.microsoft.com/ko-kr/azure/mysql/sample-scripts-java-connection-pooling *
  ***************************************************************************************/
+import Server.Netty.Server;
 import ServerConstants.ServerConstant;
 
 import java.sql.Connection;
@@ -39,10 +40,10 @@ public class DatabaseConnection {
      */
     public DatabaseConnection() {
         // jdbc:mysql://mysqlaasdevintic-sha.cloudapp.net:3306/<Your DB name>
-        this.databaseUrl = "jdbc:mysql://mysqlaasdevintic-sha.cloudapp.net:3306/" + ServerConstant.DATABASE_NAME;
-        this.userName = ServerConstant.USER_NAME;
-        this.password = ServerConstant.USER_PASSWORD;
-        this.maxPoolSize = ServerConstant.maxSize;
+        this.databaseUrl = "jdbc:mysql://" + ServerConstant.DB_IP + ":" + ServerConstant.DB_PORT + "/" + ServerConstant.DB_NAME;
+        this.userName = ServerConstant.DB_USER_NAME;
+        this.password = ServerConstant.DB_USER_PASSWORD;
+        this.maxPoolSize = ServerConstant.DB_MAXSIZE;
     }
 
     /**
@@ -126,7 +127,14 @@ public class DatabaseConnection {
      */
     private Connection createNewConnection() throws SQLException {
         Connection conn = null;
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        }catch (ClassNotFoundException ex){
+            ex.printStackTrace();
+        }
         conn = DriverManager.getConnection(databaseUrl, userName, password);
+
         return conn;
     }
 
