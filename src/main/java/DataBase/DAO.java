@@ -21,7 +21,8 @@ public class DAO {
                 res.last(); // 총 데이터 개수를 세기 위해서
                 int row_count = res.getRow();  // 데이터의 개수
                 if (row_count > 0) {  // 데이터가 존재하면
-                    res.first(); res.previous(); // 다시 offset을 처음으로
+                    res.first();
+                    res.previous(); // 다시 offset을 처음으로
                     result = new ArrayList<>();
                     int col_count = res.getMetaData().getColumnCount(); //  속성 개수를 알아옴
                     String[] col_name = new String[col_count]; // 속성 이름을 담을 공간
@@ -37,6 +38,9 @@ public class DAO {
                 }
             }
             return result;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
         } finally {
             if (conn != null) {
                 pool.returnConnection(conn);
@@ -45,7 +49,9 @@ public class DAO {
     }
 
     public static void GetAcount() throws SQLException {
-        ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT uid FROM account;");
-        System.out.println("dd");
+        ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT * FROM account;");
+        if (result != null) {
+
+        }
     }
 }
