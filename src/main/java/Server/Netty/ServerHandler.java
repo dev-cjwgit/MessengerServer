@@ -9,7 +9,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.compression.ZlibEncoder;
 
 @Sharable  //중요!
 public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
@@ -40,10 +39,11 @@ public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 //        }
         MessengerReadPacket packet = RecvPacketManager.getPacket(ctx, slea);
         if (packet != null) {
+            System.out.println("데이터 들어옴");
             final int header = packet.readUShort();
             for (final RecvOpcodePacket recv : RecvOpcodePacket.values()) {
                 if (recv.getValue() == header) {
-                    MessengerHandler.OpCodeHandler(recv, ctx, packet);
+                    MessengerHandler.PacketHandler(recv, ctx, packet);
                 }
             }
         }

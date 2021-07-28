@@ -48,10 +48,23 @@ public class DAO {
         }
     }
 
-    public static void GetAcount() throws SQLException {
-        ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT * FROM account;");
+    //region SELECT
+    public static boolean GetAcount(String email, String password) throws SQLException {
+        ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT password FROM account WHERE email=\"" + email + "\";");
         if (result != null) {
-
+            return result.get(0).get("password").equals(password);
         }
+        return false;
     }
+    //endregion
+
+    //region INSERT
+    //endregion
+
+    //region UPDATE
+    //endregion
+
+    //region DELETE
+    //endregion
+
 }

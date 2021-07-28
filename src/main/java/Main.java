@@ -12,7 +12,7 @@ public class Main {
 
         threadPoolExecutor.execute(new Server());
         try {
-            DAO.GetAcount();
+            System.out.println("Success.");
         } catch (Exception sqlex) {
             sqlex.printStackTrace();
         }

@@ -17,6 +17,10 @@ public class MessengerReadPacket {
         return bs.getSize();
     }
 
+    public void seek(int size){
+        bs.seek(size);
+    }
+
     public MessengerReadPacket(ByteArrayByteStream bs) {
         this.bs = bs;
     }

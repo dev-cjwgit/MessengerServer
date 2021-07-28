@@ -19,7 +19,6 @@ public class RecvPacketManager {
         final int port = Integer.parseInt(ctx.channel().remoteAddress().toString().split(":")[1]);
         try {
             if (!recvPacketManager.containsKey(port)) {
-
                 PacketInfo temp = new PacketInfo();
                 byte[] bs = new byte[slea.writerIndex()];
                 slea.getBytes(0, bs);
@@ -28,9 +27,9 @@ public class RecvPacketManager {
                 if (temp.length > temp.slea.getSize()) { // 데이터가 남아있는 경우
                     recvPacketManager.put(port, temp);
                 } else if (temp.length < temp.slea.getSize()) {  // 데이터가 넘칠 경우
-                    // 처리
                     throw new Exception("서버 처리중 오류가 발생하였습니다.");
                 } else { // 데이터 크기가 딱 맞을경우
+                    temp.slea.seek(4);
                     return temp.slea;
                 }
             } else {
@@ -40,6 +39,7 @@ public class RecvPacketManager {
                 if (temp.length == temp.slea.getSize()) { // 같을경우
                     MessengerReadPacket tmp = temp.slea;
                     recvPacketManager.remove(port);
+                    tmp.seek(4);
                     return tmp;
                 } else if (temp.length < temp.slea.getSize()) {  // 데이터가 넘치는경우
                     throw new Exception("서버 처리중 오류가 발생하였습니다.");
