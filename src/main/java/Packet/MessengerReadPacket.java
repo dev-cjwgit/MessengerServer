@@ -1,20 +1,32 @@
 package Packet;
 
 /**********************
-* Little Endian Bytes *
-**********************/
+ * Little Endian Bytes *
+ **********************/
 
 import java.nio.charset.StandardCharsets;
 
-public class ReadPacket {
+public class MessengerReadPacket {
     private ByteArrayByteStream bs;
 
-    public ReadPacket(ByteArrayByteStream bs) {
+    public MessengerReadPacket clone() throws CloneNotSupportedException{
+        return new MessengerReadPacket((ByteArrayByteStream)bs.clone());
+    }
+
+    public int getSize() {
+        return bs.getSize();
+    }
+
+    public MessengerReadPacket(ByteArrayByteStream bs) {
         this.bs = bs;
     }
 
-    public ReadPacket(byte[] bytes) {
+    public MessengerReadPacket(byte[] bytes) {
         bs = new ByteArrayByteStream(bytes);
+    }
+
+    public void append(byte[] bs) {
+        this.bs.append(bs);
     }
 
     public final short readShort() throws Exception {
@@ -24,6 +36,15 @@ public class ReadPacket {
         final int byte2 = bs.readByte();
 
         return (short) ((byte2 << 8) + byte1);
+    }
+
+    public final int readUShort() throws Exception {
+        if (!bs.readAble(2))
+            throw new Exception("don't read bytes");
+        int val = readShort();
+        if (val < 0)
+            val += 65537;
+        return val;
     }
 
     public final int readInt() throws Exception {
