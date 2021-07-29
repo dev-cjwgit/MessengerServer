@@ -17,29 +17,13 @@ public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        System.out.println(ctx.channel().remoteAddress().toString().split(":")[0] + " (이)가 접속함.");
+        System.out.println(ctx.channel().remoteAddress().toString() + " 님이 접속함.");
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf slea) throws Exception {
-//        byte[] bs = new byte[slea.writerIndex()];
-//        slea.getBytes(0, bs);
-//        MessengerReadPacket temp = new MessengerReadPacket(bs);
-//        final int length = temp.readInt() + 4;
-//        System.out.println(length);
-//        if (length > 0) {
-//            final int header = temp.readUShort();
-//            for (final RecvOpcodePacket recv : RecvOpcodePacket.values()) {
-//                if (recv.getValue() == header) {
-//                    MessengerHandler.OpCodeHandler(recv, ctx, temp);
-//                }
-//            }
-//        } else {
-//            ctx.close();
-//        }
         MessengerReadPacket packet = RecvPacketManager.getPacket(ctx, slea);
         if (packet != null) {
-            System.out.println("데이터 들어옴");
             final int header = packet.readUShort();
             for (final RecvOpcodePacket recv : RecvOpcodePacket.values()) {
                 if (recv.getValue() == header) {

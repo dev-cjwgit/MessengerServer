@@ -49,12 +49,20 @@ public class DAO {
     }
 
     //region SELECT
-    public static boolean GetAcount(String email, String password) throws SQLException {
+    public static boolean getAcount(String email, String password) throws SQLException {
         ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT password FROM account WHERE email=\"" + email + "\";");
         if (result != null) {
             return result.get(0).get("password").equals(password);
         }
         return false;
+    }
+
+    public static int getUid(String email) throws SQLException {
+        ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT uid FROM account WHERE email=\"" + email + "\";");
+        if (result != null) {
+            return Integer.parseInt(result.get(0).get("uid"));
+        }
+        return -1;
     }
     //endregion
 

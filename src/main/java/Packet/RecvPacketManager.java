@@ -13,7 +13,7 @@ class PacketInfo {
 
 // Socket 특성상 한번에 큰 크기의 데이터를 받아올 수 없으므로 매니저를 통하여 큰 데이터로 하나로 통합하여 받는 클래스.
 public class RecvPacketManager {
-    static private HashMap<Integer, PacketInfo> recvPacketManager = new HashMap<>();
+    static private final HashMap<Integer, PacketInfo> recvPacketManager = new HashMap<>();
 
     public static MessengerReadPacket getPacket(ChannelHandlerContext ctx, ByteBuf slea) {
         final int port = Integer.parseInt(ctx.channel().remoteAddress().toString().split(":")[1]);
@@ -47,6 +47,7 @@ public class RecvPacketManager {
             }
             return null;
         } catch (Exception ex) {
+            ex.printStackTrace();
             return null;
         }
     }
