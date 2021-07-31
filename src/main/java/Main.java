@@ -12,7 +12,8 @@ public class Main {
 
         threadPoolExecutor.execute(new Server());
         try {
-            System.out.println("Success.");
+//            var res = DAO.executeQuery("SELECT * FROM account_friend;");
+            DAO.testFunc();
         } catch (Exception sqlex) {
             sqlex.printStackTrace();
         }

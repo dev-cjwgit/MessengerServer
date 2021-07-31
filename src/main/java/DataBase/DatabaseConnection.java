@@ -3,6 +3,7 @@ package DataBase;
 /***************************************************************************************
  * https://docs.microsoft.com/ko-kr/azure/mysql/sample-scripts-java-connection-pooling *
  ***************************************************************************************/
+
 import ServerConstants.ServerConstant;
 
 import java.sql.Connection;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.Stack;
 
 public class DatabaseConnection {
+    public static DatabaseConnection pool = new DatabaseConnection();
     private final String databaseUrl;
     private final String userName;
     private final String password;
@@ -49,8 +51,7 @@ public class DatabaseConnection {
      * Get an available connection
      *
      * @return An available connection
-     * @throws SQLException
-     *             Fail to get an available connection
+     * @throws SQLException Fail to get an available connection
      */
     public synchronized Connection getConnection() throws SQLException {
         Connection conn = null;
@@ -76,11 +77,9 @@ public class DatabaseConnection {
     /**
      * Return a connection to the pool
      *
-     * @param conn
-     *            The connection
-     * @throws SQLException
-     *             When the connection is returned already or it isn't gotten
-     *             from the pool.
+     * @param conn The connection
+     * @throws SQLException When the connection is returned already or it isn't gotten
+     *                      from the pool.
      */
     public synchronized void returnConnection(Connection conn)
             throws SQLException {
@@ -107,8 +106,7 @@ public class DatabaseConnection {
      * Create a connection for the pool
      *
      * @return the new created connection
-     * @throws SQLException
-     *             When fail to create a new connection.
+     * @throws SQLException When fail to create a new connection.
      */
     private Connection createNewConnectionForPool() throws SQLException {
         Connection conn = createNewConnection();
@@ -121,15 +119,14 @@ public class DatabaseConnection {
      * Crate a new connection
      *
      * @return the new created connection
-     * @throws SQLException
-     *             When fail to create a new connection.
+     * @throws SQLException When fail to create a new connection.
      */
     private Connection createNewConnection() throws SQLException {
         Connection conn = null;
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
-        }catch (ClassNotFoundException ex){
+        } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         }
         conn = DriverManager.getConnection(databaseUrl, userName, password);
@@ -155,11 +152,9 @@ public class DatabaseConnection {
     /**
      * Make sure the connection is available now. Otherwise, reconnect it.
      *
-     * @param conn
-     *            The connection for verification.
+     * @param conn The connection for verification.
      * @return the available connection.
-     * @throws SQLException
-     *             Fail to get an available connection
+     * @throws SQLException Fail to get an available connection
      */
     private Connection makeAvailable(Connection conn) throws SQLException {
         if (isConnectionAvailable(conn)) {
@@ -180,8 +175,7 @@ public class DatabaseConnection {
     /**
      * By running a sql to verify if the connection is available
      *
-     * @param conn
-     *            The connection for verification
+     * @param conn The connection for verification
      * @return if the connection is available for now.
      */
     private boolean isConnectionAvailable(Connection conn) {

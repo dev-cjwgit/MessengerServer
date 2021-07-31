@@ -5,6 +5,7 @@ import Connector.Opcode.RecvOpcodePacket;
 import DataBase.DAO;
 import Packet.MessengerReadPacket;
 import Packet.MessengerSendPacket;
+import UserException.ErrnoHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,7 +23,7 @@ public class MessengerHandler {
                 String password = slea.readString();
                 MessengerSendPacket sp = new MessengerSendPacket();
                 sp.writeShort(255);
-                if (DAO.getAcount(email, password)) {
+                if (DAO.canLogin(email, password) == ErrnoHandler.Success) {
                     final int uid = DAO.getUid(email);
                     final int port = Integer.parseInt(ctx.channel().remoteAddress().toString().split(":")[1]);
                     if (!ConnectClient.connect_client_uid.containsKey(uid)) {  // 서버에 접속중인 uid가 아니면
