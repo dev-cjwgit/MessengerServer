@@ -91,6 +91,7 @@ public class DAO {
         }
     }
 
+
     //region SELECT
     public static ResultHandler canLogin(String email, String password) {
         try {
@@ -121,6 +122,7 @@ public class DAO {
         }
     }
     //endregion
+
 
     //region INSERT
     public static ResultHandler insertAccount(String email, String password, String name, int bd_year, int bd_month, int bd_day, String phone_number, int cash_point) {
@@ -159,8 +161,11 @@ public class DAO {
     }
     //endregion
 
+
     //region UPDATE
+
     //endregion
+
 
     //region DELETE
     public static ResultHandler deleteAccount(String email) {
@@ -178,6 +183,7 @@ public class DAO {
             return ResultHandler.Unknown_Exception;
         }
     }
+
     public static ResultHandler deleteAccount(int uid) {
         try {
             if (DAO.executeUpdate(
