@@ -1,14 +1,11 @@
 package UserException;
 
 
-import java.util.ArrayList;
-import java.util.Map;
-
-public enum ErrnoHandler {
+public enum ResultHandler {
     Fail(0),
     Success(1),
-    Unknown_Err(-1),
-
+    Unknown_Err(5),
+    Unknown_Exception(-1),
     SQLSyntax_Err(5),
 
     //region SELECT
@@ -24,10 +21,9 @@ public enum ErrnoHandler {
 
     private int value = -2;
 
-    ErrnoHandler(int value) {
+    ResultHandler(int value) {
         this.value = value;
     }
-
 
     public final int getValue() {
         return value;

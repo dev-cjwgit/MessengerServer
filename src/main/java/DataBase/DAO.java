@@ -1,6 +1,6 @@
 package DataBase;
 
-import UserException.ErrnoHandler;
+import UserException.ResultHandler;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -55,11 +55,6 @@ public class DAO {
                 res = statement.executeUpdate(query);
             }
             return res == 1;
-        } catch (SQLException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
         } finally {
             if (conn != null) {
                 DatabaseConnection.pool.returnConnection(conn);
@@ -67,44 +62,49 @@ public class DAO {
         }
     }
 
-    private static ErrnoHandler processErr(SQLException err) {
+    private static ResultHandler processErr(SQLException err) {
         switch (err.getErrorCode()) {
             case 1064:
-                return ErrnoHandler.SQLSyntax_Err;
+                return ResultHandler.SQLSyntax_Err;
             case 1146:
-                return ErrnoHandler.TableDoesntExist_Err;
+                return ResultHandler.TableDoesntExist_Err;
             case 1054:
-                return ErrnoHandler.UnkownColumn_Err;
+                return ResultHandler.UnkownColumn_Err;
             case 1062:
-                return ErrnoHandler.DuplicateKey_Err;
+                return ResultHandler.DuplicateKey_Err;
             default:
                 err.printStackTrace();
-                return ErrnoHandler.Unknown_Err;
+                return ResultHandler.Unknown_Err;
         }
     }
 
-    public static ErrnoHandler testFunc() {
+    public static ResultHandler testFunc() {
         try {
-            ArrayList<Map<String, String>> result = DAO.executeQuery("SELET password FROM account WHERE email=ddd;");
-
-            return ErrnoHandler.Fail;
+            ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT 1");
+            return ResultHandler.Fail;
         } catch (SQLException ex) {
             // 실패한 이유를 적어야함.
             return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Err;
         }
     }
 
     //region SELECT
-    public static ErrnoHandler canLogin(String email, String password) {
+    public static ResultHandler canLogin(String email, String password) {
         try {
             ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT password FROM account WHERE email=\"" + email + "\";");
             if (result != null) {
-                return result.get(0).get("password").equals(password) ? ErrnoHandler.Success : ErrnoHandler.Fail;
+                return result.get(0).get("password").equals(password) ? ResultHandler.Success : ResultHandler.Fail;
             }
-            return ErrnoHandler.Fail;
+            return ResultHandler.Fail;
         } catch (SQLException ex) {
             // 실패한 이유를 적어야함.
             return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
         }
     }
 
@@ -116,44 +116,45 @@ public class DAO {
             }
             return -1;
         } catch (SQLException ex) {
+            ex.printStackTrace();
             return -1;
         }
     }
     //endregion
 
     //region INSERT
-    public static ErrnoHandler insertAccount(String email, String password, String name, int bd_year, int bd_month, int bd_day, String phone_number, int cash_point) {
+    public static ResultHandler insertAccount(String email, String password, String name, int bd_year, int bd_month, int bd_day, String phone_number, int cash_point) {
         try {
             if (DAO.executeUpdate(
                     "INSERT INTO account(`email`, `password`, `name`, `brithday`,`phone_number`,`cash_point`, `nickname`, `introduce`) " +
                             "VALUE(\"" + email + "\",\"" + password + "\",\"" + name + "\",\"" + bd_year + "-" + bd_month + "-" + bd_day + "\",\"" + phone_number + "\"," + cash_point + ", \"" + name + "\", \"\");"
             )) {
-                return ErrnoHandler.Success;
+                return ResultHandler.Success;
             }
-            return ErrnoHandler.Fail;
+            return ResultHandler.Fail;
         } catch (SQLException ex) {
             return processErr(ex);
         } catch (Exception ex) {
             ex.printStackTrace();
-            return ErrnoHandler.Unknown_Err;
+            return ResultHandler.Unknown_Exception;
         }
     }
 
-    public static ErrnoHandler insertFriend(int my_uid, int friend_uid) {
+    public static ResultHandler insertFriend(int my_uid, int friend_uid) {
         try {
             if (DAO.executeUpdate(
                     "INSERT INTO `account_friend`(`my_uid`,`friend_uid`,`nickname`)" +
                             "value(" + my_uid + ", " + friend_uid + ", (SELECT nickname FROM account WHERE uid = " + friend_uid + "))"
             )) {
-                return ErrnoHandler.Success;
+                return ResultHandler.Success;
             }
-            return ErrnoHandler.Fail;
+            return ResultHandler.Fail;
         } catch (SQLException ex) {
             // 실패한 이유를 적어야함.
             return processErr(ex);
         } catch (Exception ex) {
             ex.printStackTrace();
-            return ErrnoHandler.Unknown_Err;
+            return ResultHandler.Unknown_Exception;
         }
     }
     //endregion
@@ -162,6 +163,36 @@ public class DAO {
     //endregion
 
     //region DELETE
+    public static ResultHandler deleteAccount(String email) {
+        try {
+            if (DAO.executeUpdate(
+                    "DELETE FROM account WHERE email=\"" + email + "\";"
+            )) {
+                return ResultHandler.Success;
+            }
+            return ResultHandler.Fail;
+        } catch (SQLException ex) {
+            return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
+        }
+    }
+    public static ResultHandler deleteAccount(int uid) {
+        try {
+            if (DAO.executeUpdate(
+                    "DELETE FROM account WHERE uid=" + uid + ";"
+            )) {
+                return ResultHandler.Success;
+            }
+            return ResultHandler.Fail;
+        } catch (SQLException ex) {
+            return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
+        }
+    }
     //endregion
 
 }
