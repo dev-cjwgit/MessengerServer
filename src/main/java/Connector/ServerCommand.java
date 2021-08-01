@@ -37,15 +37,9 @@ public class ServerCommand extends JFrame {
         AddAccountButton.addActionListener(e -> {
             var res = DAO.insertAccount(emailText.getText(), pwText.getText(), nameText.getText(), Integer.parseInt(yearText.getText()), Integer.parseInt(monthText.getText()), Integer.parseInt(dayText.getText()), phoneText.getText(), 0);
             switch (res) {
-                case Success:
-                    JOptionPane.showMessageDialog(null, "회원가입을 성공하였습니다.");
-                    break;
-                case Fail, DuplicateKey_Err:
-                    JOptionPane.showMessageDialog(null, "회원가입을 실패하였습니다.", "가입실패", JOptionPane.ERROR_MESSAGE);
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(null, "회원가입 도중 알 수 없는 에러가 발생하였습니다.", "예외발생", JOptionPane.ERROR_MESSAGE);
-                    break;
+                case Success -> JOptionPane.showMessageDialog(null, "회원가입을 성공하였습니다.");
+                case Fail, DuplicateKey_Err -> JOptionPane.showMessageDialog(null, "회원가입을 실패하였습니다.", "가입실패", JOptionPane.ERROR_MESSAGE);
+                default -> JOptionPane.showMessageDialog(null, "회원가입 도중 알 수 없는 에러가 발생하였습니다.", "예외발생", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
