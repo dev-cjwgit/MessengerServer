@@ -2,6 +2,7 @@ import Connector.Server.WorldTimer;
 import Connector.ServerCommand;
 import DataBase.DAO;
 import Server.Netty.Server;
+import ServerConstants.ServerConstant;
 
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -26,10 +27,10 @@ public class Main {
 //        }, 100, 700);
 
         try {
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        ServerCommand.main();
+        if (ServerConstant.GUI_MODE_ENABLE)
+            ServerCommand.main();
     }
 }

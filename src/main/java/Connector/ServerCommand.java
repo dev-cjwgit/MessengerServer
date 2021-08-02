@@ -42,6 +42,8 @@ public class ServerCommand extends JFrame {
                 default -> JOptionPane.showMessageDialog(null, "회원가입 도중 알 수 없는 에러가 발생하였습니다.", "예외발생", JOptionPane.ERROR_MESSAGE);
             }
         });
+
+
     }
 
     public static void main() {

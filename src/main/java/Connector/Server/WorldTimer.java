@@ -9,7 +9,9 @@ import java.util.TimerTask;
 public class WorldTimer {
     private static HashMap<String, Timer> scheduler = new HashMap<>();
 
-    public static void setSchedule(String key, TimerTask tk, int delay, int period) {
+    public static void setSchedule(String key, TimerTask tk, int delay, int period) throws Exception {
+        if (scheduler.containsKey(key))
+            throw new Exception("이미 존재하는 키입니다.");
         try {
             Timer timer = new Timer();
             timer.schedule(tk, delay, period);

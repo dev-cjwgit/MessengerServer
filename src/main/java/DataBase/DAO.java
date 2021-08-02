@@ -2,6 +2,7 @@ package DataBase;
 
 import UserException.ResultHandler;
 
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -72,6 +73,8 @@ public class DAO {
                 return ResultHandler.UnkownColumn_Err;
             case 1062:
                 return ResultHandler.DuplicateKey_Err;
+            case 1048:
+                return ResultHandler.ColumnBeNULL_Err;
             default:
                 err.printStackTrace();
                 return ResultHandler.Unknown_Err;
@@ -93,6 +96,7 @@ public class DAO {
 
 
     //region SELECT
+    //로그인성공여부
     public static ResultHandler canLogin(String email, String password) {
         try {
             ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT password FROM account WHERE email=\"" + email + "\";");
@@ -109,22 +113,24 @@ public class DAO {
         }
     }
 
-    public static int getUid(String email) {
+    //email로 회원의 uid를 가져옴
+    public static Integer getUid(String email) {
         try {
             ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT uid FROM account WHERE email=\"" + email + "\";");
             if (result != null) {
                 return Integer.parseInt(result.get(0).get("uid"));
             }
-            return -1;
+            return null;
         } catch (SQLException ex) {
             ex.printStackTrace();
-            return -1;
+            return null;
         }
     }
     //endregion
 
 
     //region INSERT
+    //회원가입
     public static ResultHandler insertAccount(String email, String password, String name, int bd_year, int bd_month, int bd_day, String phone_number, int cash_point) {
         try {
             if (DAO.executeUpdate(
@@ -142,11 +148,69 @@ public class DAO {
         }
     }
 
+    //친구추가
     public static ResultHandler insertFriend(int my_uid, int friend_uid) {
         try {
             if (DAO.executeUpdate(
                     "INSERT INTO `account_friend`(`my_uid`,`friend_uid`,`nickname`)" +
-                            "value(" + my_uid + ", " + friend_uid + ", (SELECT nickname FROM account WHERE uid = " + friend_uid + "))"
+                            "value(" + my_uid + ", " + friend_uid + ", (SELECT nickname FROM account WHERE uid = " + friend_uid + "));"
+            )) {
+                return ResultHandler.Success;
+            }
+            return ResultHandler.Fail;
+        } catch (SQLException ex) {
+            // 실패한 이유를 적어야함.
+            return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
+        }
+    }
+
+    //채팅방생성
+    public static ResultHandler insertChatting(int owner_uid, String title) {
+        try {
+            if (DAO.executeUpdate(
+                    "INSERT INTO `chatting`(`onwer_uid`, `title`)" +
+                            "value(" + owner_uid + ", \"" + title + "\");"
+            )) {
+                return ResultHandler.Success;
+            }
+            return ResultHandler.Fail;
+        } catch (SQLException ex) {
+            // 실패한 이유를 적어야함.
+            return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
+        }
+    }
+
+    //채팅방가입
+    public static ResultHandler insertChattingJoin(long chatting_uid, int account_uid) {
+        try {
+            if (DAO.executeUpdate(
+                    "INSERT INTO `chatting_join`(`chatting_uid`, `account_uid`, `title`)" +
+                            "value(" + chatting_uid + ", " + account_uid + ", (SELECT title FROM chatting WHERE uid = " + chatting_uid + "));"
+            )) {
+                return ResultHandler.Success;
+            }
+            return ResultHandler.Fail;
+        } catch (SQLException ex) {
+            // 실패한 이유를 적어야함.
+            return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
+        }
+    }
+
+    //채팅방메세지
+    public static ResultHandler insertChattingLog(long chatting_uid, int account_uid, String body) {
+        try {
+            if (DAO.executeUpdate(
+                    "INSERT INTO `chatting_log`(`chatting_uid`, `account_uid`, `body`)" +
+                            "value(" + chatting_uid + ", " + account_uid + ", \"" + body + "\");"
             )) {
                 return ResultHandler.Success;
             }
@@ -168,6 +232,7 @@ public class DAO {
 
 
     //region DELETE
+    //회원탈퇴(email)
     public static ResultHandler deleteAccount(String email) {
         try {
             if (DAO.executeUpdate(
@@ -184,6 +249,7 @@ public class DAO {
         }
     }
 
+    //회원탈퇴(uid)
     public static ResultHandler deleteAccount(int uid) {
         try {
             if (DAO.executeUpdate(
@@ -199,6 +265,75 @@ public class DAO {
             return ResultHandler.Unknown_Exception;
         }
     }
+
+    //채팅방생성
+    public static ResultHandler deleteChatting(int uid) {
+        try {
+            if (DAO.executeUpdate(
+                    "DELETE FROM chatting WHERE uid=" + uid + ";"
+            )) {
+                return ResultHandler.Success;
+            }
+            return ResultHandler.Fail;
+        } catch (SQLException ex) {
+            return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
+        }
+    }
+
+    //채팅방나가기
+    public static ResultHandler deleteChattingJoin(long chatting_uid, int account_uid) {
+        try {
+            if (DAO.executeUpdate(
+                    "DELETE FROM chatting_join WHERE chatting_uid=" + chatting_uid + " and account_uid = " + account_uid + ";"
+            )) {
+                return ResultHandler.Success;
+            }
+            return ResultHandler.Fail;
+        } catch (SQLException ex) {
+            return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
+        }
+    }
+
+    //친구삭제
+    public static ResultHandler deleteFriend(int my_uid, int friend_uid) {
+        try {
+            if (DAO.executeUpdate(
+                    "DELETE FROM account_friend WHERE my_uid=" + my_uid + " and friend_uid = " + friend_uid + ";"
+            )) {
+                return ResultHandler.Success;
+            }
+            return ResultHandler.Fail;
+        } catch (SQLException ex) {
+            return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
+        }
+    }
+
+    //채팅방메세지삭제
+    public static ResultHandler deleteChattingLog(long uid) {
+        try {
+            if (DAO.executeUpdate(
+                    "DELETE FROM `chatting_log` WHERE uid=" + uid + ";"
+            )) {
+                return ResultHandler.Success;
+            }
+            return ResultHandler.Fail;
+        } catch (SQLException ex) {
+            return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
+        }
+    }
+
     //endregion
 
 }

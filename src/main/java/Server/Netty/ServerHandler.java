@@ -1,5 +1,6 @@
 package Server.Netty;
 
+import Connector.Client.ConnectClient;
 import Connector.Opcode.RecvOpcodePacket;
 import Handling.MessengerHandler;
 import Packet.MessengerReadPacket;
@@ -27,7 +28,11 @@ public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
             final int header = packet.readUShort();
             for (final RecvOpcodePacket recv : RecvOpcodePacket.values()) {
                 if (recv.getValue() == header) {
-                    MessengerHandler.PacketHandler(recv, ctx, packet);
+                    try {
+                        MessengerHandler.PacketHandler(recv, ctx, packet);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }
@@ -49,6 +54,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
+        ConnectClient.logout(ctx);
         System.out.println(ctx.channel().remoteAddress().toString() + "님이 종료하셨습니다.");
     }
     // 종료 이벤트

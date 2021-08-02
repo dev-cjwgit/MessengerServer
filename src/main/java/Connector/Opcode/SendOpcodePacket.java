@@ -1,7 +1,6 @@
 package Connector.Opcode;
 
-
-public enum RecvOpcodePacket {
+public enum SendOpcodePacket {
     LOGIN_MESSENGER(255), // 로그인
     LOGOUT_MESSENGER(256), // 로그아웃
     INSERT_ACCOUNT(300), // 회원가입
@@ -20,7 +19,7 @@ public enum RecvOpcodePacket {
 
     private int value = -1;
 
-    RecvOpcodePacket(int value) {
+    SendOpcodePacket(int value) {
         this.value = value;
     }
 

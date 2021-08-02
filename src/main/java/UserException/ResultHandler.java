@@ -11,6 +11,7 @@ public enum ResultHandler {
     //region SELECT
     UnkownColumn_Err(10),
     TableDoesntExist_Err(11),
+    ColumnBeNULL_Err(12),
     //end region
 
     // region INSERT

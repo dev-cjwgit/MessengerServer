@@ -9,4 +9,7 @@ public class ServerConstant {
     public static final String DB_USER_PASSWORD = "ss1235789";
     public static final int DB_PORT = 3306;
     public static final int DB_MAXSIZE = 10;
+
+
+    public static final Boolean GUI_MODE_ENABLE = false;
 }
