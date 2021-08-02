@@ -13,6 +13,10 @@ public class MessengerSendPacket {
         bs = new ByteArrayOutputStream();
     }
 
+    public final void writeByte(final int i) {
+        bs.write((byte) (i & 0xFF));
+    }
+
     public final void writeShort(final int i) {
         bs.write((byte) (i & 0xFF));
         bs.write((byte) ((i >>> 8) & 0xFF));
