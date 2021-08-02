@@ -1,3 +1,4 @@
+import Connector.Server.ChattingJoinList;
 import Connector.Server.WorldTimer;
 import Connector.ServerCommand;
 import DataBase.DAO;
@@ -18,7 +19,7 @@ public class Main {
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(100, 100, 10, TimeUnit.SECONDS, blockingQueue);
 
         threadPoolExecutor.execute(new Server());
-
+        ChattingJoinList.loadDB();
 //        WorldTimer.setSchedule("T1", new TimerTask() {
 //            @Override
 //            public void run() {

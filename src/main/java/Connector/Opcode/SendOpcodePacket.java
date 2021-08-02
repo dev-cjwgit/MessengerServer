@@ -17,6 +17,7 @@ public enum SendOpcodePacket {
     DELETE_CHATTING_JOIN(326), // 채팅방 나가기
     DELETE_CHATTING_LOG(327), // 채팅방 메세지 삭제
 
+    SEND_MESSAGE_GERNAL_CHAT(1000), // 일반 메세지 채팅 센드패킷
     ;
 
     private int value = -1;

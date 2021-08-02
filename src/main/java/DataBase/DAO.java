@@ -150,6 +150,17 @@ public class DAO {
             return ResultHandler.Unknown_Exception;
         }
     }
+
+    public static ArrayList<Map<String, String>> loadChattingJoinInfo() {
+        try {
+            return DAO.executeQuery(
+                    "SELECT * FROM chatting_join;"
+            );
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
     //endregion
 
 

@@ -21,6 +21,19 @@ public class WorldTimer {
         }
     }
 
+    // 1회성 타이머는 저장하지 않음.
+    public static void setSchedule(String key, TimerTask tk, int delay) {
+        try {
+            Timer timer = new Timer();
+            timer.schedule(tk, delay);
+        } catch (
+                Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+
     public static void stopSchedule(String key) throws Exception {
         if (scheduler.containsKey(key)) {
             scheduler.get(key).cancel();

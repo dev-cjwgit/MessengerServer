@@ -3,6 +3,7 @@ package Handling;
 import Connector.Client.ConnectClient;
 import Connector.Opcode.RecvOpcodePacket;
 import Connector.Opcode.SendOpcodePacket;
+import Connector.Server.ChattingJoinList;
 import DataBase.DAO;
 import Packet.MessengerReadPacket;
 import Packet.MessengerSendPacket;
@@ -80,8 +81,31 @@ public class MessengerHandler {
                 int account_uid = slea.readInt();
                 MessengerSendPacket sp = new MessengerSendPacket();
                 sp.writeShort(SendOpcodePacket.INSERT_CHATTING_JOIN.getValue());
+                // TODO: user enter시 각방에 notice해야함.
                 if (DAO.insertChattingJoin(chatting_uid, account_uid) == ResultHandler.Success) {
-                    sp.writeShort(1);
+                    if (ChattingJoinList.joinChatting(chatting_uid, account_uid) == ResultHandler.Success) {
+                        sp.writeShort(1);
+                    } else {
+                        sp.writeShort(0);
+                    }
+                } else {
+                    sp.writeShort(0);
+                }
+                ctx.writeAndFlush(sp.getByteBuf());
+            }
+
+            case DELETE_CHATTING_JOIN: {
+                long chatting_uid = slea.readLong();
+                int account_uid = slea.readInt();
+                MessengerSendPacket sp = new MessengerSendPacket();
+                sp.writeShort(SendOpcodePacket.DELETE_CHATTING_JOIN.getValue());
+                // TODO: user exit시 각방에 notice해야함.
+                if (DAO.deleteChattingJoin(chatting_uid, account_uid) == ResultHandler.Success) {
+                    if (ChattingJoinList.exitChatting(chatting_uid, account_uid) == ResultHandler.Success) {
+                        sp.writeShort(1);
+                    } else {
+                        sp.writeShort(0);
+                    }
                 } else {
                     sp.writeShort(0);
                 }
@@ -97,6 +121,21 @@ public class MessengerHandler {
 
                 if (DAO.insertChattingLog(chatting_uid, account_uid, body) == ResultHandler.Success) {
                     sp.writeShort(1);
+                    var users = ChattingJoinList.getChattingUser(chatting_uid);
+                    if (users != null) {
+                        MessengerSendPacket sp1 = new MessengerSendPacket();
+                        sp1.writeShort(SendOpcodePacket.SEND_MESSAGE_GERNAL_CHAT.getValue());
+                        sp1.writeString(body);
+                        for (Integer user : users) {
+                            try {
+                                var ctx1 = ConnectClient.getClient(user);
+                                if (ctx1 != null) {
+                                    ctx1.writeAndFlush(sp1.getByteBuf());
+                                }
+                            } catch (Exception ignored) {
+                            }
+                        }
+                    }
                 } else {
                     sp.writeShort(0);
                 }
@@ -144,7 +183,6 @@ public class MessengerHandler {
                 }
                 ctx.writeAndFlush(sp.getByteBuf());
             }
-
 
 
             default: {
