@@ -6,7 +6,9 @@ public enum SendOpcodePacket {
     INSERT_ACCOUNT(300), // 회원가입
     DELETE_ACCOUNT_UID(301), // uid로 회원탈퇴
     DELETE_ACCOUNT_EMAIL(302), // email로 회원탈퇴
+
     INSERT_FIREND(310), // 친구등록
+    DELETE_FRIEND(311), // 친구삭제
     INSERT_CHATTING(320), // 채팅방 생성
     INSERT_CHATTING_JOIN(321), // 채팅방 가입
     INSERT_CHATTING_LOG(322), // 채팅방에 메세지 보내기

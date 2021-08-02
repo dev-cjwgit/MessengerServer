@@ -99,7 +99,9 @@ public class DAO {
     //로그인성공여부
     public static ResultHandler canLogin(String email, String password) {
         try {
-            ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT password FROM account WHERE email=\"" + email + "\";");
+            ArrayList<Map<String, String>> result = DAO.executeQuery(
+                    "SELECT password FROM account WHERE email=\"" + email + "\";"
+            );
             if (result != null) {
                 return result.get(0).get("password").equals(password) ? ResultHandler.Success : ResultHandler.Fail;
             }
@@ -116,7 +118,9 @@ public class DAO {
     //email로 회원의 uid를 가져옴
     public static Integer getUid(String email) {
         try {
-            ArrayList<Map<String, String>> result = DAO.executeQuery("SELECT uid FROM account WHERE email=\"" + email + "\";");
+            ArrayList<Map<String, String>> result = DAO.executeQuery(
+                    "SELECT uid FROM account WHERE email=\"" + email + "\";"
+            );
             if (result != null) {
                 return Integer.parseInt(result.get(0).get("uid"));
             }
@@ -124,6 +128,26 @@ public class DAO {
         } catch (SQLException ex) {
             ex.printStackTrace();
             return null;
+        }
+    }
+
+    //회원정보성공여부
+    public static ResultHandler canAccountInfo(String email, String password, int year, int month, int day, String phone) {
+        try {
+            ArrayList<Map<String, String>> result = DAO.executeQuery(
+                    "select EXISTS (select `uid` from `account` where `email`=\"" + email + "\" and `password`=\"" + password + "\" and `brithday` = \"" + year + "-" + month + "-" + day + "\" and `phone_number`=\"" + phone + "\" limit 1) as `success`;"
+            );
+            if (result != null) {
+                if (result.get(0).get("success").equals("1"))
+                    return ResultHandler.Success;
+            }
+            return ResultHandler.Fail;
+        } catch (SQLException ex) {
+            // 실패한 이유를 적어야함.
+            return processErr(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultHandler.Unknown_Exception;
         }
     }
     //endregion

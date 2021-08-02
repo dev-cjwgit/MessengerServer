@@ -9,15 +9,15 @@ import java.nio.charset.StandardCharsets;
 public class MessengerReadPacket {
     private ByteArrayByteStream bs;
 
-    public MessengerReadPacket clone() throws CloneNotSupportedException{
-        return new MessengerReadPacket((ByteArrayByteStream)bs.clone());
+    public MessengerReadPacket clone() throws CloneNotSupportedException {
+        return new MessengerReadPacket((ByteArrayByteStream) bs.clone());
     }
 
     public int getSize() {
         return bs.getSize();
     }
 
-    public void seek(int size){
+    public void seek(int size) {
         bs.seek(size);
     }
 
@@ -31,6 +31,23 @@ public class MessengerReadPacket {
 
     public void append(byte[] bs) {
         this.bs.append(bs);
+    }
+
+    public final byte readByte() throws Exception {
+        if (!bs.readAble(1))
+            throw new Exception("don't read bytes");
+        final int byte1 = bs.readByte();
+
+        return (byte) byte1;
+    }
+
+    public final short readUByte() throws Exception {
+        if (!bs.readAble(1))
+            throw new Exception("don't read bytes");
+        int val = readByte();
+        if (val < 0)
+            val += 257;
+        return (short) val;
     }
 
     public final short readShort() throws Exception {

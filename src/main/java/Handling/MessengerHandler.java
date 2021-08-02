@@ -75,6 +75,76 @@ public class MessengerHandler {
                 ctx.writeAndFlush(sp.getByteBuf());
             }
 
+            case INSERT_CHATTING_JOIN: {
+                long chatting_uid = slea.readLong();
+                int account_uid = slea.readInt();
+                MessengerSendPacket sp = new MessengerSendPacket();
+                sp.writeShort(SendOpcodePacket.INSERT_CHATTING_JOIN.getValue());
+                if (DAO.insertChattingJoin(chatting_uid, account_uid) == ResultHandler.Success) {
+                    sp.writeShort(1);
+                } else {
+                    sp.writeShort(0);
+                }
+                ctx.writeAndFlush(sp.getByteBuf());
+            }
+
+            case INSERT_CHATTING_LOG: {
+                long chatting_uid = slea.readLong();
+                int account_uid = slea.readInt();
+                String body = slea.readString();
+                MessengerSendPacket sp = new MessengerSendPacket();
+                sp.writeShort(SendOpcodePacket.INSERT_CHATTING_LOG.getValue());
+
+                if (DAO.insertChattingLog(chatting_uid, account_uid, body) == ResultHandler.Success) {
+                    sp.writeShort(1);
+                } else {
+                    sp.writeShort(0);
+                }
+
+                ctx.writeAndFlush(sp.getByteBuf());
+            }
+
+            case DELETE_ACCOUNT_EMAIL: {
+                String email = slea.readString();
+                String password = slea.readString();
+                int bd_year = slea.readShort();
+                int bd_month = slea.readByte();
+                int bd_day = slea.readByte();
+                String phone = slea.readString();
+                MessengerSendPacket sp = new MessengerSendPacket();
+                sp.writeShort(SendOpcodePacket.DELETE_ACCOUNT_EMAIL.getValue());
+
+                if (DAO.canAccountInfo(email, password, bd_year, bd_month, bd_day, phone) == ResultHandler.Success) {
+                    // 회원정보가 맞으면
+                    if (DAO.deleteAccount(email) == ResultHandler.Success) {
+                        // 회원정보를 삭제하였으면
+                        sp.writeShort(1);
+                    } else {
+                        // 삭제에 실패했으면
+                        sp.writeShort(0);
+                    }
+                } else {
+                    // 회원정보가 아니면
+                    sp.writeShort(0);
+                }
+                ctx.writeAndFlush(sp.getByteBuf());
+            }
+
+            case DELETE_FRIEND: {
+                int my_uid = slea.readInt();
+                int friend_uid = slea.readInt();
+
+                MessengerSendPacket sp = new MessengerSendPacket();
+                sp.writeShort(SendOpcodePacket.DELETE_FRIEND.getValue());
+
+                if (DAO.deleteFriend(my_uid, friend_uid) == ResultHandler.Success) {
+                    sp.writeShort(1);
+                } else {
+                    sp.writeShort(0);
+                }
+                ctx.writeAndFlush(sp.getByteBuf());
+            }
+
             default: {
                 System.out.println("Unknown Opcode : " + opcode);
                 break;
