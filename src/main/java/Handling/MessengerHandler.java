@@ -125,6 +125,7 @@ public class MessengerHandler {
                     if (users != null) {
                         MessengerSendPacket sp1 = new MessengerSendPacket();
                         sp1.writeShort(SendOpcodePacket.SEND_MESSAGE_GERNAL_CHAT.getValue());
+                        sp1.writeLong(chatting_uid);
                         sp1.writeString(body);
                         for (Integer user : users) {
                             try {
