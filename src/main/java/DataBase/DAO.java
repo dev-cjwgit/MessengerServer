@@ -96,6 +96,22 @@ public class DAO {
 
 
     //region SELECT
+    //chatting_uid 조회
+    public static Long getChattingUid(int onwer_uid, String title) {
+        try {
+            ArrayList<Map<String, String>> result = DAO.executeQuery(
+                    "SELECT uid FROM chatting WHERE onwer_uid=" + onwer_uid + " and title=\"" + title + "\";"
+            );
+            if (result != null) {
+                return Long.parseLong(result.get(0).get("uid"));
+            }
+            return null;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     //로그인성공여부
     public static ResultHandler canLogin(String email, String password) {
         try {
@@ -116,7 +132,7 @@ public class DAO {
     }
 
     //email로 회원의 uid를 가져옴
-    public static Integer getUid(String email) {
+    public static Integer getAccountUid(String email) {
         try {
             ArrayList<Map<String, String>> result = DAO.executeQuery(
                     "SELECT uid FROM account WHERE email=\"" + email + "\";"
@@ -302,7 +318,7 @@ public class DAO {
     }
 
     //채팅방생성
-    public static ResultHandler deleteChatting(int uid) {
+    public static ResultHandler deleteChatting(long uid) {
         try {
             if (DAO.executeUpdate(
                     "DELETE FROM chatting WHERE uid=" + uid + ";"

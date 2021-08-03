@@ -20,7 +20,7 @@ public class MessengerHandler {
                 MessengerSendPacket sp = new MessengerSendPacket();
                 sp.writeShort(SendOpcodePacket.LOGIN_MESSENGER.getValue());
                 if (DAO.canLogin(email, password) == ResultHandler.Success) {
-                    final Integer uid = DAO.getUid(email);
+                    final Integer uid = DAO.getAccountUid(email);
                     final int port = Integer.parseInt(ctx.channel().remoteAddress().toString().split(":")[1]);
                     if (!ConnectClient.connect_client_uid.containsKey(uid)) {  // 서버에 접속중인 uid가 아니면
                         ConnectClient.connect_client_uid.put(uid, ctx);
@@ -69,10 +69,38 @@ public class MessengerHandler {
                 MessengerSendPacket sp = new MessengerSendPacket();
                 sp.writeShort(SendOpcodePacket.INSERT_CHATTING.getValue());
                 if (DAO.insertChatting(my_uid, title) == ResultHandler.Success) {
-                    sp.writeShort(1);
+                    Long chatting_uid = DAO.getChattingUid(my_uid, title);
+                    // TODO: if Create, ServerInfo Update
+                    if (chatting_uid != null) {
+                        if (ChattingJoinList.createChatting(chatting_uid) == ResultHandler.Success) {
+                            sp.writeShort(1);
+                        } else {
+                            sp.writeShort(0);
+                        }
+                    } else {
+                        sp.writeShort(0);
+                    }
                 } else {
                     sp.writeShort(0);
                 }
+                ctx.writeAndFlush(sp.getByteBuf());
+            }
+
+            case DELETE_CHATTING: {
+                long chatting_uid = slea.readInt();
+                MessengerSendPacket sp = new MessengerSendPacket();
+                sp.writeShort(SendOpcodePacket.DELETE_CHATTING.getValue());
+                if (DAO.deleteChatting(chatting_uid) == ResultHandler.Success) {
+                    // TODO: if Delete, ServerInfo Update
+                    if (ChattingJoinList.deleteChatting(chatting_uid) == ResultHandler.Success) {
+                        sp.writeShort(1);
+                    } else {
+                        sp.writeShort(0);
+                    }
+                } else {
+                    sp.writeShort(0);
+                }
+
                 ctx.writeAndFlush(sp.getByteBuf());
             }
 
@@ -84,7 +112,12 @@ public class MessengerHandler {
                 // TODO: user enter시 각방에 notice해야함.
                 if (DAO.insertChattingJoin(chatting_uid, account_uid) == ResultHandler.Success) {
                     if (ChattingJoinList.joinChatting(chatting_uid, account_uid) == ResultHandler.Success) {
-                        sp.writeShort(1);
+                        // TODO: if Join, ServerInfo Update
+                        if (ChattingJoinList.enterChatting(chatting_uid, ctx) == ResultHandler.Success) {
+                            sp.writeShort(1);
+                        } else {
+                            sp.writeShort(0);
+                        }
                     } else {
                         sp.writeShort(0);
                     }
@@ -102,7 +135,12 @@ public class MessengerHandler {
                 // TODO: user exit시 각방에 notice해야함.
                 if (DAO.deleteChattingJoin(chatting_uid, account_uid) == ResultHandler.Success) {
                     if (ChattingJoinList.exitChatting(chatting_uid, account_uid) == ResultHandler.Success) {
-                        sp.writeShort(1);
+                        // TODO: if Exit, ServerInfo Update
+                        if (ChattingJoinList.exitChatting(chatting_uid, ctx) == ResultHandler.Success) {
+                            sp.writeShort(1);
+                        } else {
+                            sp.writeShort(0);
+                        }
                     } else {
                         sp.writeShort(0);
                     }
