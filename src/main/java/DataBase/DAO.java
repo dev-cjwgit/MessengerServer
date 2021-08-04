@@ -96,6 +96,47 @@ public class DAO {
 
 
     //region SELECT
+    //account_uid로 join된 chatting_uid list반환
+    public static ArrayList<Long> getChattingList(String email) {
+        ArrayList<Long> data = new ArrayList<>();
+        try {
+            ArrayList<Map<String, String>> result = DAO.executeQuery(
+                    "SELECT chatting_uid FROM chatting_join WHERE account_uid = (SELECT uid FROM account WHERE email=\"" + email + "\");"
+            );
+            if (result != null) {
+                for (var item : result) {
+                    data.add(Long.parseLong(item.get("chatting_uid")));
+                }
+
+                return data;
+            }
+            return null;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ArrayList<Long> getChattingList(int account_uid) {
+        ArrayList<Long> data = new ArrayList<>();
+        try {
+            ArrayList<Map<String, String>> result = DAO.executeQuery(
+                    "SELECT chatting_uid FROM chatting_join WHERE account_uid = " + account_uid + ";"
+            );
+            if (result != null) {
+                for (var item : result) {
+                    data.add(Long.parseLong(item.get("chatting_uid")));
+                }
+
+                return data;
+            }
+            return null;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     //chatting_uid 조회
     public static Long getChattingUid(int onwer_uid, String title) {
         try {
@@ -167,10 +208,10 @@ public class DAO {
         }
     }
 
-    public static ArrayList<Map<String, String>> loadChattingJoinInfo() {
+    public static ArrayList<Map<String, String>> loadChattingUidInfo() {
         try {
             return DAO.executeQuery(
-                    "SELECT * FROM chatting_join;"
+                    "SELECT uid FROM chatting;"
             );
         } catch (SQLException ex) {
             ex.printStackTrace();

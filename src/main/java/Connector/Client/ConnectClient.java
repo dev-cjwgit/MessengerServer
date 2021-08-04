@@ -18,10 +18,17 @@ public class ConnectClient {
     //endregion
 
 
-
     public static ChannelHandlerContext getClient(int uid) {
         if (connect_client_uid.containsKey(uid)) {
             return connect_client_uid.get(uid);
+        }
+        return null;
+    }
+
+    public static Integer getUid(ChannelHandlerContext ctx) {
+        final int port = Integer.parseInt(ctx.channel().remoteAddress().toString().split(":")[1]);
+        if (connect_client_port.containsKey(port)) {
+            return connect_client_port.get(port);
         }
         return null;
     }

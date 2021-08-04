@@ -2,6 +2,8 @@ package Server.Netty;
 
 import Connector.Client.ConnectClient;
 import Connector.Opcode.RecvOpcodePacket;
+import Connector.Server.ChattingJoinList;
+import DataBase.DAO;
 import Handling.MessengerHandler;
 import Packet.MessengerReadPacket;
 import Packet.RecvPacketManager;
@@ -10,6 +12,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+
+import java.util.ArrayList;
 
 @Sharable  //중요!
 public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
@@ -54,7 +58,19 @@ public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        ConnectClient.logout(ctx);
+
+        // 서버 채팅 목록 정보에서 삭제하기.
+        Integer account_uid = ConnectClient.getUid(ctx);
+        if (account_uid != null) {
+            ArrayList<Long> temp = DAO.getChattingList(account_uid);
+            if (temp != null) {
+                for (var item : temp) {
+                    ChattingJoinList.exitChatting(item, ctx);
+                }
+            }
+        }
+
+        ConnectClient.logout(ctx); // 서버 접속정보에서 삭제하기
         System.out.println(ctx.channel().remoteAddress().toString() + "님이 종료하셨습니다.");
     }
     // 종료 이벤트
